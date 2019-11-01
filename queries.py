@@ -9,35 +9,30 @@ def project(relation, columns):
     # relation:  set
     # columns: list of strings as column names
     result = []
-    all_columns = list(relation)[0]._fields
-    tuple_ = collections.namedtuple("result", columns)
+    all_columns = next(iter(relation))._fields
+    tuple_name = next(iter(relation)).__repr__().split("(")[0]
+    tuple_ = collections.namedtuple(tuple_name,columns)
     for i in range(len(relation)):
-        values = []
-        for j in range(len(columns)):
-            if columns[j] in all_columns:
-                values.append(list(relation)[i]._asdict()[columns[j]])
+        # get the values for each field
+        values = [list(relation)[i]._asdict()[x] for x in columns if x in all_columns]
         result.append(tuple_(*values))
-    result = set(result)
-    return result
+    return set(result)
 
 
 def select(relation, predicate):
-    result = []
-    all_columns = list(relation)[0]._fields
-    tuple_ = collections.namedtuple("result", all_columns)
-    for i in range(len(relation)):
-        if predicate(list(relation)[i]):
-            values = []
-            for j in all_columns:
-                values.append(list(relation)[i]._asdict()[j])
-            result.append(tuple_(*values))
-    result = set(result)
-    return result
+    result = [list(relation)[i] for i in range(len(relation)) if predicate(list(relation)[i])]
+    return set(result)
 
 
 def rename(relation, new_columns=None, new_relation=None):
-    pass
-
+    result = []
+    all_columns = list(next(iter(relation))._asdict().keys())
+    tuple_name = next(iter(relation)).__repr__().split("(")[0]
+    tuple_ = collections.namedtuple(tuple_name, new_columns)
+    for i in range(len(relation)):
+        values = [list(relation)[i]._asdict()[j] for j in all_columns]
+        result.append(tuple_(*values))
+    return set(result)
 
 def cross(relation1, relation2):
     pass
@@ -109,3 +104,4 @@ pprint.pprint(
 
 pprint.pprint(project(Artist, ["Name"]))
 pprint.pprint(select(Artist, lambda t: t.Name == "Red Hot Chili Peppers"))
+pprint.pprint(rename(Album,["Id", "NameofAlbum", "Artist"]))
