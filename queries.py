@@ -122,7 +122,7 @@ def natural_join(relation1, relation2):
     if (common_col == None):
         raise ValueError("No common Column found")                          # if no common column found throw error
     all_columns = list(set(rel1_columns + rel2_columns))
-    tuple_ = collections.namedtuple("result", all_columns)                  # create tuple with all columns
+    tuple_ = collections.namedtuple("Result", all_columns)                  # create tuple with all columns
     iterations = math.ceil((len(relation1) * len(relation2)) / 10000)       # calc no of inner lists
     result_list = [[] for i in range(iterations)]                           # initialize result_list
     iter1 = iter(relation1)                                                 # iterator for relation1
